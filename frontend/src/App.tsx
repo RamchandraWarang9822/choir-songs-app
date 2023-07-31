@@ -1,6 +1,8 @@
 // frontend/src/App.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import './App.css';
+
 
 function App() {
   const [songs, setSongs] = useState<any[]>([]);
@@ -8,6 +10,8 @@ function App() {
   const [lyrics, setLyrics] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [ppt, setPpt] = useState<File | null>(null);
+
+  const baseUrl = 'http://localhost:5000';
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -23,22 +27,23 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     const formData = new FormData();
     formData.append('title', title);
     formData.append('lyrics', lyrics);
-    if (image) formData.append('image', image);
-    if (ppt) formData.append('ppt', ppt);
+    if (image) formData.append('file', image);
+    if (ppt) formData.append('file', ppt);
 
+  
     try {
-      const response = await axios.post('/api/upload', formData);
+      const response = await axios.post(`${baseUrl}/api/upload`, formData); // Use the baseUrl here
       const songData = {
         title,
         lyrics,
         image: response.data.path,
         ppt: response.data.path,
       };
-
+  
       setSongs([...songs, songData]);
       setTitle('');
       setLyrics('');
